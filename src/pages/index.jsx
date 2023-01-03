@@ -1,21 +1,8 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
-import { Fragment } from 'react';
+import { useState, Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
+import axios from 'axios';
 
 const navigation = [
 	{ name: 'Product', href: '#' },
@@ -24,7 +11,15 @@ const navigation = [
 	{ name: 'Company', href: '#' },
 ];
 
-export default function Example() {
+const Home = () => {
+	const [url, setUrl] = useState('');
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		const response = await axios.get(`/api/twitter?url=${url}`);
+		console.log(response);
+	};
+
 	return (
 		<div className="relative overflow-hidden">
 			<Popover as="header" className="relative">
@@ -161,7 +156,7 @@ export default function Example() {
 									</p>
 									<div className="mt-10 sm:mt-12">
 										<form
-											action="#"
+											action={() => handleSubmit()}
 											className="sm:mx-auto sm:max-w-xl lg:mx-auto"
 										>
 											<div className="sm:flex">
@@ -197,4 +192,6 @@ export default function Example() {
 			</main>
 		</div>
 	);
-}
+};
+
+export default Home;
