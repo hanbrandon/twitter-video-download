@@ -1,8 +1,9 @@
-import { useState, Fragment, useRef } from 'react';
+import { useEffect, useState, Fragment, useRef } from 'react';
 import { Popover, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, WindowIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import axios from 'axios';
+import Gallery from '@/components/Gallery';
 
 const navigation = [
 	{ name: 'Product', href: '#' },
@@ -13,18 +14,30 @@ const navigation = [
 
 const Home = () => {
 	const urlRef = useRef(null);
+	const [twitters, setTwitters] = useState([]);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		console.log('hi');
-		const response = await axios.get(
-			`/api/twitter?url=${urlRef.current.value}`,
-		);
+		const response = await axios.post(`/api/twitter`, {
+			url: urlRef.current.value,
+		});
+		// window.open(
+		// 	response.data.download[response.data.download.length - 1].url,
+		// 	'_blank',
+		// );
 		console.log(response);
 	};
 
+	useEffect(() => {
+		const fetchData = async () => {
+			const response = await axios.get(`/api/twitters`);
+			setTwitters(response.data.twitters);
+		};
+		fetchData();
+	}, []);
+
 	return (
-		<div className="relative overflow-hidden">
+		<div className="relative min-h-screen overflow-hidden bg-gray-900 ">
 			<Popover as="header" className="relative">
 				<div className="bg-gray-900 pt-6">
 					<nav
@@ -41,38 +54,7 @@ const Home = () => {
 										alt=""
 									/>
 								</a>
-								<div className="-mr-2 flex items-center md:hidden">
-									<Popover.Button className="focus-ring-inset inline-flex items-center justify-center rounded-md bg-gray-900 p-2 text-gray-400 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-white">
-										<span className="sr-only">Open main menu</span>
-										<Bars3Icon className="h-6 w-6" aria-hidden="true" />
-									</Popover.Button>
-								</div>
 							</div>
-							{/* <div className="hidden space-x-8 md:ml-10 md:flex">
-								{navigation.map((item) => (
-									<a
-										key={item.name}
-										href={item.href}
-										className="text-base font-medium text-white hover:text-gray-300"
-									>
-										{item.name}
-									</a>
-								))}
-							</div> */}
-						</div>
-						<div className="hidden md:flex md:items-center md:space-x-6">
-							<a
-								href="#"
-								className="text-base font-medium text-white hover:text-gray-300"
-							>
-								Log in
-							</a>
-							<a
-								href="#"
-								className="inline-flex items-center rounded-md border border-transparent bg-gray-600 px-4 py-2 text-base font-medium text-white hover:bg-gray-700"
-							>
-								Start free trial
-							</a>
 						</div>
 					</nav>
 				</div>
@@ -141,10 +123,10 @@ const Home = () => {
 			</Popover>
 
 			<main>
-				<div className="bg-gray-900 pt-10 sm:pt-16 lg:overflow-hidden lg:pt-8 lg:pb-14">
+				<div className="pt-10 sm:pt-16 lg:overflow-hidden lg:pt-8 lg:pb-14">
 					<div className="mx-auto max-w-7xl lg:px-8">
 						<div className="lg:grid lg:grid-cols-1 lg:gap-8">
-							<div className="mx-auto max-w-md px-4 sm:max-w-2xl sm:px-6 sm:text-center lg:flex lg:items-center lg:px-0 lg:text-left">
+							<div className="mx-auto max-w-md px-4 sm:max-w-4xl sm:px-6 sm:text-center lg:flex lg:items-center lg:px-0 lg:text-left">
 								<div className="lg:py-24">
 									<h1 className="mt-4 text-center text-4xl font-bold tracking-tight text-white sm:mt-5 sm:text-6xl lg:mt-6 xl:text-6xl">
 										<span className="block">Download</span>
@@ -186,13 +168,12 @@ const Home = () => {
 											</div>
 										</form>
 									</div>
+									<Gallery twitters={twitters} />
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-
-				{/* More main page content here... */}
 			</main>
 		</div>
 	);
