@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useRef } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
@@ -12,11 +12,14 @@ const navigation = [
 ];
 
 const Home = () => {
-	const [url, setUrl] = useState('');
+	const urlRef = useRef(null);
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		const response = await axios.get(`/api/twitter?url=${url}`);
+		console.log('hi');
+		const response = await axios.get(
+			`/api/twitter?url=${urlRef.current.value}`,
+		);
 		console.log(response);
 	};
 
@@ -156,7 +159,7 @@ const Home = () => {
 									</p>
 									<div className="mt-10 sm:mt-12">
 										<form
-											action={() => handleSubmit()}
+											onSubmit={handleSubmit}
 											className="sm:mx-auto sm:max-w-xl lg:mx-auto"
 										>
 											<div className="sm:flex">
@@ -166,6 +169,7 @@ const Home = () => {
 													</label>
 													<input
 														id="url"
+														ref={urlRef}
 														type="text"
 														placeholder="Enter twitter video URL"
 														className="block w-full rounded-md border-0 px-4 py-3 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2 focus:ring-offset-gray-900"
